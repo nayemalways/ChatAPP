@@ -37,9 +37,14 @@ const GetAllUsers = CatchAsync(async (req: Request, res: Response, next: NextFun
 
 
 const updateUser = async (req: Request, res: Response, next: NextFunction) => {
-     const userId = req.params.userId;
     const verifiedUser = req.user;
-    const user = await UserService.updateUserService(req.body, verifiedUser, userId );
+
+    const payload = {
+    ...req.body,
+    picture: req.file ? req.file.path : null,
+    };
+
+    const user = await UserService.updateUserService(payload, verifiedUser._id );
 
     SendResponse(res, {
         statusCode: httpStatusCode.OK,
