@@ -27,14 +27,14 @@ const loadEnvVariables = (): IENV => {
     return {
         MONGO_URI: process.env.MONGO_URI as string,
         PORT: process.env.PORT as string,
-        NODE_ENV: process.env.ENV as string,
+        NODE_ENV: process.env.NODE_ENV as string,
         BCRYPT_SALT_ROUND: process.env.BCRYPT_SALT_ROUND as string,
         JWT_SECRET_CODE: process.env.JWT_SECRET_CODE as string,
         JWT_EXPIRATION_TIME: process.env.JWT_EXPIRATION_TIME as string,
-        JWT_REFRESH_SECRET: process.env.JWT_EXPIRATION_TIME as string,
-        JWT_RERESH_EXPIRATION: process.env.JWT_EXPIRATION_TIME as string,
-        SUPER_ADMIN_PASSWORD: process.env.JWT_EXPIRATION_TIME as string,
-        SUPER_ADMIN_EMAIL: process.env.JWT_EXPIRATION_TIME as string,
+        JWT_REFRESH_SECRET: process.env.JWT_REFRESH_SECRET as string,
+        JWT_RERESH_EXPIRATION: process.env.JWT_RERESH_EXPIRATION as string,
+        SUPER_ADMIN_PASSWORD: process.env.SUPER_ADMIN_PASSWORD as string,
+        SUPER_ADMIN_EMAIL: process.env.SUPER_ADMIN_EMAIL as string,
     }
 }
 
