@@ -15,6 +15,7 @@ const server = http.createServer(app);
 // Middleware setup
 app.use(cors());
 app.use(express.json({limit: '4mb'}));
+app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
 app.get("/", (req: Request, res: Response ) => {
