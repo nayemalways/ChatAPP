@@ -11,12 +11,15 @@ interface IENV {
     JWT_EXPIRATION_TIME: string;
     JWT_RERESH_EXPIRATION: string;
     JWT_REFRESH_SECRET: string;
-    SUPER_ADMIN_PASSWORD: string;
     SUPER_ADMIN_EMAIL: string;
+    SUPER_ADMIN_PASSWORD: string;
+    CLOUDINARY_APP_NAME: string;
+    CLOUDINARY_API_KEY: string;
+    CLOUDINARY_API_SECRET: string;
 }
 
 const loadEnvVariables = (): IENV => {
-    const envVar: string[] = ["MONGO_URI", "PORT", "NODE_ENV", "BCRYPT_SALT_ROUND", "JWT_EXPIRATION_TIME", "JWT_SECRET_CODE", "JWT_REFRESH_SECRET", "JWT_RERESH_EXPIRATION", "SUPER_ADMIN_EMAIL", "SUPER_ADMIN_PASSWORD"];
+    const envVar: string[] = ["MONGO_URI", "PORT", "NODE_ENV", "BCRYPT_SALT_ROUND", "JWT_EXPIRATION_TIME", "JWT_SECRET_CODE", "JWT_REFRESH_SECRET", "JWT_RERESH_EXPIRATION", "SUPER_ADMIN_EMAIL", "SUPER_ADMIN_PASSWORD", "CLOUDINARY_APP_NAME", "CLOUDINARY_API_KEY", "CLOUDINARY_API_SECRET"];
 
     envVar.forEach((item) => {
         if(!process.env[item]) {
@@ -35,6 +38,9 @@ const loadEnvVariables = (): IENV => {
         JWT_RERESH_EXPIRATION: process.env.JWT_RERESH_EXPIRATION as string,
         SUPER_ADMIN_PASSWORD: process.env.SUPER_ADMIN_PASSWORD as string,
         SUPER_ADMIN_EMAIL: process.env.SUPER_ADMIN_EMAIL as string,
+        CLOUDINARY_APP_NAME: process.env.CLOUDINARY_APP_NAME as string,
+        CLOUDINARY_API_KEY: process.env.CLOUDINARY_API_KEY as string,
+        CLOUDINARY_API_SECRET: process.env.CLOUDINARY_API_SECRET as string,
     }
 }
 
