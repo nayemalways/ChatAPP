@@ -4,13 +4,17 @@ import { UserService } from "./user.services";
 import { CatchAsync } from "../../utils/CatAsync";
 import { SendResponse } from "../../utils/SendResponse";
 import  httpStatusCode  from 'http-status-codes';
-import { DecodeToken } from "../../utils/jwt";
-import env from "../../../config/env";
+import { SetCookie } from "../../utils/SetCookie";
+import { createUserTokens } from "../../utils/user.tokens";
 
 
 
 const RegisterUser = CatchAsync( async (req: Request, res: Response, next: NextFunction) => {
     const user = await UserService?.RegisterUserService(req.body);
+
+    // Generate user tokens and  Set to Cookies
+    const userTokens = await createUserTokens( user._id );
+    SetCookie(res, userTokens);
 
     SendResponse(res, {
          statusCode: httpStatusCode.CREATED,

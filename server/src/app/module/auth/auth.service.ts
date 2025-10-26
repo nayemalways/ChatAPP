@@ -3,28 +3,26 @@ import AppError from "../../errorHelper/errorHelper";
 import User from "../user/user.model";
 import bcrypt from "bcrypt";
 import { IUser } from "../user/user.interface";
-import { generaeNewAccessTokenByRefreshToken, generateUserToken } from "../../utils/authTokens";
 import httpStatusCode from 'http-status-codes';
 import { JwtPayload } from "jsonwebtoken";
+import { createNewAccessTokenWithRefreshToken, createUserTokens } from "../../utils/user.tokens";
 
 
 const loginService = async (payload: Partial<IUser>) => {
     const { email, password }  = payload;
 
-    // USER CHECK
-    const isUserExist = await User.findOne({email});
+    const isUserExist = await User.findOne({ email });
     if(!isUserExist) throw new AppError(statusCode.BAD_REQUEST, "No such user found! Please Register!");
 
-    // PASSWORD CHECK
     const isPasswordMatched = await bcrypt.compare(password as string, isUserExist.password as string);
     if(!isPasswordMatched) throw new AppError(statusCode.BAD_REQUEST, "Incorrect Password");
      
-    const userToken = generateUserToken(isUserExist);
+    const userToken = createUserTokens(isUserExist._id);
     return userToken;
 }
 
 const newAccessToken = async (refreshToken: string) => {
-    const accessToken = await generaeNewAccessTokenByRefreshToken(refreshToken);
+    const accessToken = await createNewAccessTokenWithRefreshToken(refreshToken);
     return { accessToken };
 }
 
