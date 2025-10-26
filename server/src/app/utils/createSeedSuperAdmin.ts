@@ -1,7 +1,6 @@
 /* eslint-disable no-console */
 import env from "../../config/env"
 import AppError from "../errorHelper/errorHelper";
-import { Role } from "../module/user/user.interface";
  import User from "../module/user/user.model"
  import  httpStatusCode  from 'http-status-codes';
 
@@ -15,10 +14,9 @@ export const createSeedSuperAdmin = async () => {
         }
 
         const payload = {
-            name: "Nayem Ahmed",
+            full_name: "Nayem Ahmed",
             email: env?.SUPER_ADMIN_EMAIL,
-            password: env?.SUPER_ADMIN_PASSWORD,
-            role: Role.SUPERADMIN
+            password: env?.SUPER_ADMIN_PASSWORD
         }
 
         const superAdmin = await User.create(payload);
