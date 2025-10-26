@@ -1,4 +1,5 @@
- import { IMessage } from "./message.interface";
+ import { io, userSocketMap } from "../../../app";
+import { IMessage } from "./message.interface";
 import Message from "./message.model"
 
 
@@ -21,6 +22,7 @@ const markMessageAsSeen = async (id: string) => {
 }
 
 const sendMessageService = async (payload: Partial<IMessage>, senderId: string, receiverId: string) => { 
+
     const messagePayload: IMessage = {
         receiver_id: receiverId,
         sender_id: senderId
@@ -34,6 +36,13 @@ const sendMessageService = async (payload: Partial<IMessage>, senderId: string, 
     }
 
     const message = await Message.create(messagePayload);
+
+
+    const receiverSocketId = userSocketMap[receiverId]
+    if (receiverSocketId) {
+        io.to(receiverSocketId).emit("newMessage", message);
+    }
+
     return message;
 }
 

@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import express, { Request, Response } from 'express';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
@@ -5,12 +6,37 @@ import { GlobalRoutes } from './router/routes';
 import { globalErrorhandler } from './app/middleware/globalErrorHandler';
 import { NotFound } from './app/middleware/NotFound';
 import http from 'http';
+import { Server } from 'socket.io';
 
 
 
 const app = express();
 const server = http.createServer(app);
 
+export const io = new Server(server, {
+    cors: {origin: "*"}
+});
+
+// Store online users
+export const userSocketMap: Record<string, string> = {} // { userId: socketId }
+
+// socket.io connection handler
+io.on("connection", (socket) => {
+    const userId = socket.handshake.query.userId as string;
+    console.log("User connected: ", userId);
+
+    if (userId) userSocketMap[userId] = socket.id;
+
+    // Emit online user's to all connected clients
+    io.emit("getOnlineUsers", Object.keys(userSocketMap));
+
+    io.on("disconnect", () => {
+        console.log("User disconnected: ", userId);
+        // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
+        delete userSocketMap[userId];
+        io.emit("getOnlineUsers", Object.keys(userSocketMap));
+    })
+})
 
 // Middleware setup
 app.use(cors());
