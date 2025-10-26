@@ -3,6 +3,7 @@ import { IUser } from "./user.interface";
 import User from "./user.model";
 import httpStatusCode from "http-status-codes";
 import { deleteImageFromCLoudinary } from "../../../config/cloudinary.config";
+import Message from "../message/message.model";
 
 const RegisterUserService = async (payload: Partial<IUser>) => {
   const { email } = payload;
@@ -19,9 +20,24 @@ const RegisterUserService = async (payload: Partial<IUser>) => {
   return user;
 };
 
-const GetAllUser = async () => {
-  const users = await User.find({}).lean();
-  return users;
+const GetAllUser = async (user_id: string) => {
+  const users = await User.find({_id: {$ne: user_id}}).select("-password");
+
+  // Count number of message unseen
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const unseenMessage: any = {};
+  const promises = users.map( async (user) => {
+    const message = await Message.find({sender_id: user._id, receiver_id: user_id, seen: false});
+    if(message.length > 0) {
+      unseenMessage[user.id]  = message.length;
+    }
+  })
+
+  await Promise.all(promises);
+  return {
+    users,
+    unseenMessage
+  };
 };
 
 const updateUserService = async (

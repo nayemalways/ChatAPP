@@ -26,12 +26,13 @@ const RegisterUser = CatchAsync( async (req: Request, res: Response, next: NextF
 
 
 const GetAllUsers = CatchAsync(async (req: Request, res: Response, next: NextFunction) => {
-    const users = await UserService?.GetAllUser();
+    const userId = req.user?._id;
+    const result = await UserService?.GetAllUser(userId);
     SendResponse(res, {
          statusCode: httpStatusCode.OK,
          success: true,
-         message:"User retrive successfully",
-         data: users
+         message:"User retrive successfully!",
+         data: result
     })
 })
 

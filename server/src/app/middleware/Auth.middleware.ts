@@ -9,6 +9,11 @@ import User from "../module/user/user.model";
 export const CheckAuth = () =>  async (req: Request, res: Response, next: NextFunction) => {
     try {
         const token = req.headers.authorization;
+
+        if (!token) {
+            throw new AppError(401, "User unauthorized! Token must required.")
+        }
+
         const verifyUser =   DecodeToken(token as string, env.JWT_SECRET_CODE) as JwtPayload;
         const user = await User.findById(verifyUser.userId).select("-password");
 
