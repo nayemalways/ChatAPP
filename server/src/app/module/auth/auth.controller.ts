@@ -20,6 +20,15 @@ const UserLogin = CatchAsync(async (req: Request, res: Response, next: NextFunct
     })
 })
 
+const checkAuthorized = CatchAsync(async (req: Request, res: Response) => {
+    SendResponse(res, {
+        success: true,
+        statusCode: 200,
+        message: "User authorized",
+        data: req.user
+    })
+})
+
 const generetNewAccessToken = CatchAsync(async (req: Request, res: Response, next: NextFunction) => {
 
      const  refreshToken  = req.cookies?.refreshToken
@@ -75,6 +84,7 @@ const resetPassword = CatchAsync(async (req: Request, res: Response, next: NextF
 
 export const AuthController = {
     UserLogin,
+    checkAuthorized,
     generetNewAccessToken,
     logout,
     resetPassword

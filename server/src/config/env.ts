@@ -23,7 +23,7 @@ const loadEnvVariables = (): IENV => {
 
     envVar.forEach((item) => {
         if(!process.env[item]) {
-            throw new Error("Missing ENV Variable");
+            throw new Error(`Missing ENV Variable: ${ item }` );
         }
     })
 
