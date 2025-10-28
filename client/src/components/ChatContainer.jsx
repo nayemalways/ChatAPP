@@ -4,6 +4,7 @@ import assets from '../assets/assets';
 import DefaultChatInterface from './DefaultChatInterface';
 import { formatMessageTime } from '../lib/utils';
 import { AuthContext, ChatContext } from '../../context/Context';
+import { FALBACK_USER_IMAGE } from '../constant/constant';
 
 const ChatContainer = () => {
 
@@ -45,7 +46,7 @@ const ChatContainer = () => {
              <div className='flex items-center gap-3 py-3 mx-4 border-b border-stone-500'>
                 <div className="w-10 h-10 rounded-full overflow-hidden shrink-0">
                     <img
-                        src={`${selectedUser?.picture || 'https://cdn-icons-png.flaticon.com/512/5556/5556468.png'}`}
+                        src={`${selectedUser?.picture || FALBACK_USER_IMAGE}`}
                         alt="Profile"
                         className="w-full h-full object-cover"
                     />
@@ -79,7 +80,7 @@ const ChatContainer = () => {
 
 
                              <div className='text-center text-xs w-7 h-7 rounded-full overflow-hidden'>
-                                <img src={msg.sender_id === selectedUser._id ? selectedUser.picture : authUser.picture} alt="avatar" className='w-full' />
+                                <img src={msg.sender_id === selectedUser._id ? selectedUser.picture || FALBACK_USER_IMAGE : authUser.picture || FALBACK_USER_IMAGE} alt="avatar" className='w-full' />
                                 <p className="text-gray-500"> {formatMessageTime(msg.createdAt)} </p>
                              </div>
                         </div>

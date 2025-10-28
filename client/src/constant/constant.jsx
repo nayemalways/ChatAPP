@@ -11,3 +11,5 @@ export const api = axios.create({
         'Content-Type': 'application/json'
     }
 })
+
+export const FALBACK_USER_IMAGE = 'https://cdn-icons-png.flaticon.com/512/5556/5556468.png';
