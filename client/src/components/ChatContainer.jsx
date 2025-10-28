@@ -1,4 +1,5 @@
- import { useContext, useEffect, useState } from 'react';
+/* eslint-disable react-hooks/exhaustive-deps */
+ import { useContext, useEffect, useRef, useState } from 'react';
 import assets from '../assets/assets';
 import DefaultChatInterface from './DefaultChatInterface';
 import { formatMessageTime } from '../lib/utils';
@@ -10,9 +11,11 @@ const ChatContainer = () => {
     const [file, setFile] = useState(null);
 
     const {setSelectedUser, selectedUser , message, sendMessage, loadSelectedMessage} = useContext(ChatContext);
-    const { onlineUsers } = useContext(AuthContext);
+    const { onlineUsers, authUser } = useContext(AuthContext);
+
 
     // console.log(message);
+    const scrollEnd = useRef();
 
     const messageSendHandler = () => {
         const formdata = new FormData();
@@ -20,11 +23,20 @@ const ChatContainer = () => {
         formdata.append("file", file);
 
         sendMessage(formdata);
+        setText("");
+        setFile(null);
     }
 
     useEffect(() => {
         loadSelectedMessage();
-    }, [selectedUser])
+    }, [selectedUser]);
+
+    useEffect(() => {
+        if (scrollEnd.current) {
+            scrollEnd.current.scrollIntoView({ behavior: "smooth" });
+        }
+    }, [message, selectedUser]);
+
 
 
     return selectedUser ? (
@@ -51,16 +63,16 @@ const ChatContainer = () => {
                 {
                   message.length !== 0 ? (
                     message.map((msg, i) => (
-                        <div key={i} className={`flex items-end gap-2 justify-end ${msg.senderId !== msg.receiver_id && 'flex-row-reverse'}`}>
-                             {msg.image ? (
-                                <img src={ msg?.image} alt='image' className='w-38 my-5 rounded relative z-0' />
+                        <div key={i} className={`flex items-end gap-2 justify-end ${msg.sender_id === selectedUser._id && 'flex-row-reverse'}`}>
+                             {msg.img ? (
+                                <img src={ msg?.img} alt='image' className='w-38 my-5 rounded relative z-0' />
                              ): (
-                                <p className={`p-2 max-w-[200px] md:text-sm font-light rounded-lg mb-8 break-all bg-violet-500/30 text-white ${msg.senderId === selectedUser._id ? 'rounded-br-none' : 'rounded-bl-none'} `}>{msg.text}</p>
+                                <p className={`p-2 max-w-[200px] md:text-sm font-light rounded-lg mb-8 break-all bg-violet-500/30 text-white ${msg.sender_id === selectedUser._id ? 'rounded-br-none' : 'rounded-bl-none'} `}>{msg.text}</p>
                              )}
 
 
                              <div className='text-center text-xs'>
-                                <img src={msg.senderId === selectedUser._id ? assets.avatar_icon : assets.profile_martin} alt="avatar" className='w-7 rounded-full' />
+                                <img src={msg.sender_id === selectedUser._id ? selectedUser.picture : authUser.picture} alt="avatar" className='w-7 rounded-full' />
                                 <p className="text-gray-500"> {formatMessageTime(msg.createdAt)} </p>
                              </div>
                         </div>
@@ -71,13 +83,21 @@ const ChatContainer = () => {
                     </div>
                   ) 
                 }
-                {/* <div ref={scrollEnd}></div> */}
+                <div ref={scrollEnd}></div>
              </div>
 
              {/* ----------bottom area ---------- */}
              <div className="flex items-center gap-1 max-w-[90%] m-auto mb-5 transform">
                 <div className='flex-1 flex items-center bg-gray-100/12 px-3 rounded-full'>
-                    <input onChange={(e) => setText(e.target.value)} type="text" placeholder='Send a message' className='flex-1 text-sm p-3 border-none rounded-lg outline-none text-white placeholder-gray-400' />
+                    {file && (
+                        <img
+                            src={URL.createObjectURL(file)}
+                            alt="Profile Image"
+                            className={`w-18 h-18 bottom-12 absolute rounded`}
+                        />
+                    )
+                    }
+                    <input onChange={(e) => setText(e.target.value)} value={text} type="text" placeholder='Send a message' className='flex-1 text-sm p-3 border-none rounded-lg outline-none text-white placeholder-gray-400' />
                     <input onChange={(e) => setFile(e.target.files[0])} type="file" name="image" id="image" accept='image/png, image/jpeg' hidden />
                     <label htmlFor="image">
                         <img src={assets.gallery_icon} alt="Gallery" className='w-5 mr-2 cursor-pointer' />
