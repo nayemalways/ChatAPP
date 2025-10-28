@@ -13,7 +13,6 @@ const ChatContainer = () => {
     const {setSelectedUser, selectedUser , message, sendMessage, loadSelectedMessage} = useContext(ChatContext);
     const { onlineUsers, authUser } = useContext(AuthContext);
 
-    console.log(authUser);
 
     // console.log(message);
     const scrollEnd = useRef();

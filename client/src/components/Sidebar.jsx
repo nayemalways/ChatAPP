@@ -55,7 +55,6 @@ const Sidebar = () => {
                             </div>
                             <div className='flex flex-col leading-5'>
                                 <p>{user.full_name}</p>
-                                {console.log(user.picture)}
                                 {
                                     onlineUsers.includes(user._id)
                                     ? <span className='text-green-400 text-xs'>Online</span>

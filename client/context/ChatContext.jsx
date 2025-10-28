@@ -101,7 +101,7 @@ export const ChatProvider = ({ children }) => {
             }
         });
 
-        setMessage( res.data.data);
+        setMessage(res.data.data)
     }
 
     const value = {
