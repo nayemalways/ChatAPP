@@ -13,6 +13,7 @@ const ChatContainer = () => {
     const {setSelectedUser, selectedUser , message, sendMessage, loadSelectedMessage} = useContext(ChatContext);
     const { onlineUsers, authUser } = useContext(AuthContext);
 
+    console.log(authUser);
 
     // console.log(message);
     const scrollEnd = useRef();
@@ -43,7 +44,14 @@ const ChatContainer = () => {
         <div className='h-full  overflow-auto relative backdrop-blur-lg border-r-2 border-slate-600'>
             {/* ----------Header area ----------- */}
              <div className='flex items-center gap-3 py-3 mx-4 border-b border-stone-500'>
-                <img className='w-12 rounded-full' src={`${selectedUser?.picture || 'https://avatars.githubusercontent.com/u/124289808?v=4'} `} alt="Profile martin" />
+                <div className="w-10 h-10 rounded-full overflow-hidden shrink-0">
+                    <img
+                        src={`${selectedUser?.picture || 'https://avatars.githubusercontent.com/u/124289808?v=4'}`}
+                        alt="Profile"
+                        className="w-full h-full object-cover"
+                    />
+                </div>
+
                 <div className='flex  justify-between items-center w-full'>
                     <p className='text-slate-200 text-md'>
                         {selectedUser?.full_name || "Nayem Ahmed"}
@@ -71,8 +79,8 @@ const ChatContainer = () => {
                              )}
 
 
-                             <div className='text-center text-xs'>
-                                <img src={msg.sender_id === selectedUser._id ? selectedUser.picture : authUser.picture} alt="avatar" className='w-7 rounded-full' />
+                             <div className='text-center text-xs w-7 h-7 rounded-full overflow-hidden'>
+                                <img src={msg.sender_id === selectedUser._id ? selectedUser.picture : authUser.picture} alt="avatar" className='w-full' />
                                 <p className="text-gray-500"> {formatMessageTime(msg.createdAt)} </p>
                              </div>
                         </div>

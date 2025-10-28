@@ -8,7 +8,7 @@ const Sidebar = () => {
 
     const navigate = useNavigate();
     const {logout, onlineUsers} = useContext(AuthContext);
-    const {getUsers, users, setUnseenMessage, unseenMessage, setSelectedUser, selectedUser} = useContext(ChatContext);
+    const {getUsers, users, unseenMessage, setSelectedUser, selectedUser} = useContext(ChatContext);
 
     const [input, setInput] = useState(false);
 
@@ -50,9 +50,12 @@ const Sidebar = () => {
                 {
                    users && filterUsers.map((user, i) => (
                         <div key={i} onClick={()=> {setSelectedUser(user)}} className={`relative flex items-center gap-2 p-2 pl-4 rounded cursor-pointer max-sm:text-sm ${selectedUser?._id === user._id && 'bg-[282142/50]'}`} >
-                            <img src={user?.picture || assets.avatar_icon} alt="User Image" className='w-[35px] aspect-square rounded-full' />
+                            <div className='w-[35px] h-[35px] rounded-full overflow-hidden shrink-0 '>
+                                <img src={user?.picture || assets.avatar_icon} alt="User Image" className='w-full object-cover ' />
+                            </div>
                             <div className='flex flex-col leading-5'>
                                 <p>{user.full_name}</p>
+                                {console.log(user.picture)}
                                 {
                                     onlineUsers.includes(user._id)
                                     ? <span className='text-green-400 text-xs'>Online</span>

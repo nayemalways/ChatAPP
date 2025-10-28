@@ -28,7 +28,7 @@ const Profile = () => {
 
   return (
     <>
-     <div className="flex justify-center items-center absolute top-35 left-[40%]">
+     <div className="flex justify-center items-center absolute bottom-10 left-[40%]">
         <Link className="bg-purple-500 px-3 py-3" to="/">Got to Home Page</Link>
      </div>
 
@@ -100,4 +100,3 @@ const Profile = () => {
 };
 
 export default Profile;
-<h1>Profile Page</h1>;

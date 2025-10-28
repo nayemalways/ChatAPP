@@ -9,7 +9,9 @@ const RightSidebar = () => {
     return (
         <div className={`bg-[#8185B2]/10 text-white w-full relative overflow-y-scroll ${selectedUser ? "max-md:hidden": ""} `}>
              <div className='pt-16 flex flex-col items-center gap-2 text-xs font-light mx-auto'>
-                <img src={ selectedUser?.picture || assets.avatar_icon } alt="Avatar"  className='w-20 aspect-square rounded-full'/>
+                <div className='w-[100px] h-[100px] rounded-full overflow-hidden shrink-0 '>
+                    <img src={ selectedUser?.picture || assets.avatar_icon } alt="Avatar"  className='w-full object-cover '/>
+                </div>
                 <h1 className='px-10 text-xl font-medium mx-auto flex items-center gap-2'>
                     <p className={`w-2 h-2 rounded-full ${onlineUsers.includes(selectedUser._id) ? "bg-green-500" : "bg-slate-500" }`}></p>
                     { selectedUser?.full_name }
