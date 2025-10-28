@@ -5,7 +5,7 @@ import axios from 'axios';
 import toast from 'react-hot-toast';
 import { io } from 'socket.io-client';
 import Cookies from 'js-cookie';
-import { api, backendURL } from "../src/constant/constant";
+import { api, backendURL, SOCKET_BACKEND_URL } from "../src/constant/constant";
 
 
 
@@ -38,7 +38,7 @@ export const AuthProvider = ({children}) => {
 
     const socketConnect = (userData) => {
         if(!userData || socket?.connected) return;
-        const newSocket = io(`http://localhost:3002`, {
+        const newSocket = io(SOCKET_BACKEND_URL, {
             query: {
                 userId: userData?._id
             }
