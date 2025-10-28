@@ -46,7 +46,7 @@ const ChatContainer = () => {
              <div className='flex items-center gap-3 py-3 mx-4 border-b border-stone-500'>
                 <div className="w-10 h-10 rounded-full overflow-hidden shrink-0">
                     <img
-                        src={`${selectedUser?.picture || 'https://avatars.githubusercontent.com/u/124289808?v=4'}`}
+                        src={`${selectedUser?.picture || 'https://cdn-icons-png.flaticon.com/512/5556/5556468.png'}`}
                         alt="Profile"
                         className="w-full h-full object-cover"
                     />
