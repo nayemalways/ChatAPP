@@ -44,6 +44,7 @@ const updateUserService = async (
   payload: Partial<IUser>,
   userId: string
 ) => {
+
   const isUser = await User.findById(userId);
 
   if (!isUser) {

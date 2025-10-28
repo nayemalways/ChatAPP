@@ -6,7 +6,7 @@ import { messageService } from "./message.service";
 
 
 const getSelectedUserMessage = CatchAsync(async (req: Request, res: Response) => {
-    const { userId } = req.user;
+    const  userId  = req.user._id;
     const { id } = req.params;
 
     const result = await messageService.getSelectedUserMessageService(userId, id);

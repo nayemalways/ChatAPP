@@ -5,25 +5,28 @@ import axios from 'axios';
 import toast from 'react-hot-toast';
 import { io } from 'socket.io-client';
 import Cookies from 'js-cookie';
+import { api, backendURL } from "../src/constant/constant";
 
- 
-const backendURL = import.meta.env.VITE_BACKEND_URL;
-axios.defaults.baseURL = backendURL;
+
 
 export const AuthProvider = ({children}) => {
 
     const [accessToken, setaccessToken] = useState(Cookies.get("accessToken"));
-    const [authUser, setAuthUser] = useState(null);
+    const [authUser, setAuthUser] = useState({});
     const [onlineUsers, setOnlineUsers] = useState([]);
     const [socket, setSocket] = useState(null);
 
     // Check if the user authenticated, if so set the user data and connect the data
     const checkAuth = async () => {
         try {
-            const res = await axios.get('/auth/check');
+            const res = await api.get(`/auth/check`, {
+                headers: {
+                    Authorization: accessToken
+                }
+            });
             if (res.data.success) {
-                setAuthUser(res.data);
-                socketConnect(res.data);
+                setAuthUser(res.data.data);
+                socketConnect(res.data.data);
             }
         } catch (error) {
             toast.error(error.message);
@@ -33,7 +36,7 @@ export const AuthProvider = ({children}) => {
 
     const socketConnect = (userData) => {
         if(!userData || socket?.connected) return;
-        const newSocket = io(backendURL, {
+        const newSocket = io(`http://localhost:3002`, {
             query: {
                 userId: userData?._id
             }
@@ -49,11 +52,29 @@ export const AuthProvider = ({children}) => {
     }
 
     // Login function to handle user authentication and socket connection
-    const login = async (state, credential) => {
+    const login = async (payload) => {
         try {
-            const res = await axios.post(`/auth/${state}`, credential);
+            const res = await api.post(`/auth/login`, payload);
             if(res.data.success) {
+                Cookies.set('accessToken', res.data.data.accessToken);
+                axios.defaults.headers.common["Authorization"] = res.data.data.accessToken;
                 toast.success(res.data.message)
+                return res.data;
+            }else {
+                 toast.error(res.data.message);
+            }
+        } catch (error) {
+            toast.error(error.message);
+        }
+    }
+    // Sign Up function to handle user authentication and socket connection
+    const signup = async (payload) => {
+        try {
+            const res = await api.post(`/user/register`, payload);
+            if(res.data.success) {
+                toast.success(res.data.message);
+                axios.defaults.headers.common["Authorization"] = res.data.data.accessToken;
+                Cookies.set('accessToken', res.data.data.accessToken);
                 window.location.href = '/';
             }else {
                  toast.error(res.data.message);
@@ -76,11 +97,13 @@ export const AuthProvider = ({children}) => {
             socket.disconnect();
         }
 
+        location.reload();
+
     }
 
     const updateProfile = async (body) => {
         try {
-            const res = await axios.patch('/user', body, {
+            const res = await axios.patch(`${backendURL}/user`, body, {
                 headers: {
                     "Content-Type": "multipart/form-data"
                 }
@@ -114,7 +137,8 @@ export const AuthProvider = ({children}) => {
         socket,
         login,
         logout,
-        updateProfile
+        updateProfile,
+        signup
     }
 
     return (

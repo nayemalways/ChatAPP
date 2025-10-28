@@ -1,22 +1,13 @@
 import { Response } from "express";
 
-interface ITokens {
-    accessToken?: string;
-    refreshToken?: string;
-}
 
-export const SetCookie = (res: Response, tokens: ITokens) => {
-    if(tokens.accessToken) {
-        res.cookie("accessToken", tokens.accessToken, {
-                httpOnly: true,
-                secure: false
-        })
-    }
-
-    if(tokens.refreshToken) {
-        res.cookie("refreshToken", tokens.refreshToken, {
-                httpOnly: true,
-                secure: false
+export const SetCookie = (res: Response, tokens: string) => {
+    if(tokens) {
+        res.cookie("refreshToken", tokens, {
+            httpOnly: true,
+            secure: true, // only true in prod (HTTPS)
+            sameSite: 'none', 
+            maxAge: 30 * 24 * 60 * 60 * 1000 // 30 days
         })
     }
 }

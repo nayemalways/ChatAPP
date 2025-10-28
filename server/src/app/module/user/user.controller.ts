@@ -14,13 +14,17 @@ const RegisterUser = CatchAsync( async (req: Request, res: Response, next: NextF
 
     // Generate user tokens and  Set to Cookies
     const userTokens = await createUserTokens( user._id );
-    SetCookie(res, userTokens);
+    SetCookie(res, userTokens.refreshToken);
+
 
     SendResponse(res, {
          statusCode: httpStatusCode.CREATED,
          success: true,
          message: "User Created Successfully",
-         data: user
+         data: {
+            accessToken: userTokens.accessToken,
+            user
+         }
     })
 })
 

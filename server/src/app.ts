@@ -18,7 +18,9 @@ export const io = new Server(server, {
 });
 
 // Store online users
-export const userSocketMap: Record<string, string> = {} // { userId: socketId }
+export const userSocketMap: Record<string, string> = {} // { 68ffc62329d8c39088f0d241: 68ffc62329d8c39088f0d241 }
+
+
 
 // socket.io connection handler
 io.on("connection", (socket) => {
@@ -30,7 +32,7 @@ io.on("connection", (socket) => {
     // Emit online user's to all connected clients
     io.emit("getOnlineUsers", Object.keys(userSocketMap));
 
-    io.on("disconnect", () => {
+    socket.on("disconnect", () => {
         console.log("User disconnected: ", userId);
         // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
         delete userSocketMap[userId];
@@ -39,7 +41,10 @@ io.on("connection", (socket) => {
 })
 
 // Middleware setup
-app.use(cors());
+app.use(cors({
+    origin: "http://localhost:5173",
+    credentials: true
+}));
 app.use(express.json({limit: '4mb'}));
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());

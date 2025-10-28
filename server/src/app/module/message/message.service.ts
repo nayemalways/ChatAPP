@@ -16,8 +16,8 @@ const getSelectedUserMessageService = async (userId: string, selectedUserId: str
     return message;
 }
 
-const markMessageAsSeen = async (id: string) => {
-    await Message.findByIdAndUpdate(id, {seen: true});
+const markMessageAsSeen = async (messageId: string) => {
+    await Message.findByIdAndUpdate(messageId, {seen: true});
     return null;
 }
 

@@ -10,13 +10,14 @@ import AppError from "../../errorHelper/errorHelper";
 
 const UserLogin = CatchAsync(async (req: Request, res: Response, next: NextFunction) => {
     const loginInfo = await AuthService.loginService(req.body);
-    SetCookie(res, loginInfo);
+
+    SetCookie(res, loginInfo.refreshToken);
     
     SendResponse(res, {
         statusCode: httpStatusCode.ACCEPTED,
         success: true,
         message: "Login Successfull",
-        data: loginInfo
+        data: loginInfo.accessToken
     })
 })
 
@@ -30,14 +31,13 @@ const checkAuthorized = CatchAsync(async (req: Request, res: Response) => {
 })
 
 const generetNewAccessToken = CatchAsync(async (req: Request, res: Response, next: NextFunction) => {
+     const  refreshToken  = req.cookies?.refreshToken;
 
-     const  refreshToken  = req.cookies?.refreshToken
     if(!refreshToken)
         throw new AppError(httpStatusCode.BAD_REQUEST, "No Refresh Token Found") 
 
     const newAccessToken = await AuthService.newAccessToken(refreshToken);
-    SetCookie(res, newAccessToken);
-    
+
     SendResponse(res, {
         statusCode: httpStatusCode.ACCEPTED,
         success: true,

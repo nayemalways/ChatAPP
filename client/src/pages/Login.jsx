@@ -1,6 +1,9 @@
-import React, { useContext, useState } from 'react';
+import { useContext, useState } from 'react';
 import assets from '../assets/assets';
 import { AuthContext } from '../../context/Context';
+import Cookies from 'js-cookie';
+import toast from 'react-hot-toast';
+import { useNavigate } from 'react-router-dom';
 
 const Login = () => {
     const [currState, setCurrState] = useState("Sign up");
@@ -10,19 +13,35 @@ const Login = () => {
     const [bio, setBio] = useState("");
     const [isDataSubmitted, setIsDataSubmitted] = useState(false);
 
-    const { login } = useContext(AuthContext);
+    const navigate = useNavigate();
 
+    const {login, signup} = useContext(AuthContext);
+
+
+    // Submit Handler
     const onSubmitHandler = async (e) => {
         e.preventDefault();
-
-
 
         if(currState === "Sign up" && !isDataSubmitted) {
             setIsDataSubmitted(true);
             return;
         }
 
-        login
+        if(currState === "Sign up") {
+            const payload = {full_name: fullName, email, password, bio};
+            signup(payload);
+        }else {
+            const data = await login({email, password});
+             
+            if(data.success) {
+                Cookies.set("accessToken", data.data);
+                toast.success(data.message);
+                navigate('/');
+            }else {
+                toast.error(data.message);
+            }
+        }
+
     }
 
     return (
