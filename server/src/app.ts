@@ -39,7 +39,8 @@ io.on("connection", (socket) => {
 // Middleware setup
 app.use(
   cors({
-    origin: "https://chatapp-frontend-jf6w.onrender.com",
+    // origin: "https://chatapp-frontend-jf6w.onrender.com",
+    origin: "http://localhost:5173",
     credentials: true
   })
 );
@@ -54,7 +55,7 @@ app.get("/", (req: Request, res: Response) => {
 
 app.use("/api/v1", GlobalRoutes);
 
-app.use(NotFound);
 app.use(globalErrorhandler);
+app.use(NotFound);
 
 export default server;
