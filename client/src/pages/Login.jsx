@@ -2,7 +2,6 @@ import { useContext, useState } from 'react';
 import assets from '../assets/assets';
 import { AuthContext } from '../../context/Context';
 import Cookies from 'js-cookie';
-import toast from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
 
 const Login = () => {
@@ -32,13 +31,11 @@ const Login = () => {
             signup(payload);
         }else {
             const data = await login({email, password});
-             
-            if(data.success) {
-                Cookies.set("accessToken", data.data);
-                toast.success(data.message);
+
+
+            if(data?.success) {
+                Cookies.set("accessToken", data?.data);
                 navigate('/');
-            }else {
-                toast.error(data.message);
             }
         }
 

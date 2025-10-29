@@ -1,150 +1,137 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useEffect, useState } from "react";
 import { AuthContext } from "./Context";
-import axios from 'axios';
-import toast from 'react-hot-toast';
-import { io } from 'socket.io-client';
-import Cookies from 'js-cookie';
+import axios from "axios";
+import toast from "react-hot-toast";
+import { io } from "socket.io-client";
+import Cookies from "js-cookie";
 import { api, backendURL, SOCKET_BACKEND_URL } from "../src/constant/constant";
+import { globalErrorHelper } from "../src/ErrorHelper/error.helper";
 
+export const AuthProvider = ({ children }) => {
+  const [accessToken, setaccessToken] = useState(Cookies.get("accessToken"));
+  const [authUser, setAuthUser] = useState({});
+  const [onlineUsers, setOnlineUsers] = useState([]);
+  const [socket, setSocket] = useState(null);
 
+  // Check if the user authenticated, if so set the user data and connect the data
+  const checkAuth = async () => {
+    try {
+      const res = await api.get(`/auth/check`, {
+        headers: {
+          Authorization: accessToken,
+        },
+      });
 
-export const AuthProvider = ({children}) => {
+      if (res.data.success) {
+        setAuthUser(res.data.data);
+        socketConnect(res.data.data);
+      }
+    } catch (error) {
+      globalErrorHelper(error);
+    }
+  };
 
-    const [accessToken, setaccessToken] = useState(Cookies.get("accessToken"));
-    const [authUser, setAuthUser] = useState({});
-    const [onlineUsers, setOnlineUsers] = useState([]);
-    const [socket, setSocket] = useState(null);
+  const socketConnect = (userData) => {
+    if (!userData || socket?.connected) return;
+    const newSocket = io(SOCKET_BACKEND_URL, {
+      query: {
+        userId: userData?._id,
+      },
+    });
 
+    newSocket.connect();
+    setSocket(newSocket);
 
-    // Check if the user authenticated, if so set the user data and connect the data
-    const checkAuth = async () => {
-        try {
-            const res = await api.get(`/auth/check`, {
-                headers: {
-                    Authorization: accessToken
-                }
-            });
-            if (res.data.success) {
-                setAuthUser(res.data.data);
-                socketConnect(res.data.data);
-            }
-        } catch (error) {
-            toast.error(error.message);
-            console.log(error);
-        }
+    newSocket.on("getOnlineUsers", (userIds) => {
+      setOnlineUsers(userIds);
+    });
+  };
+
+  // Login function to handle user authentication and socket connection
+  const login = async (payload) => {
+    try {
+      const res = await api.post(`/auth/login`, payload);
+      if (res.data?.success) {
+        Cookies.set("accessToken", res.data.data.accessToken);
+        axios.defaults.headers.common["Authorization"] =
+        res.data?.data?.accessToken;
+        toast.success(res.data?.message);
+        return res.data;
+      }
+    } catch (error) {
+      globalErrorHelper(error);
+    }
+  };
+
+  // Sign Up function to handle user authentication and socket connection
+  const signup = async (payload) => {
+    try {
+      const res = await api.post(`/user/register`, payload);
+      if (res.data?.success) {
+        toast.success(res.data?.message);
+        axios.defaults.headers.common["Authorization"] =
+          res.data?.data?.accessToken;
+        Cookies.set("accessToken", res.data?.data?.accessToken);
+        window.location.href = "/";
+      }
+    } catch (error) {
+      globalErrorHelper(error);
+    }
+  };
+
+  const logout = () => {
+    Cookies.remove("refreshToken");
+    Cookies.remove("accessToken");
+    setaccessToken(null);
+    setAuthUser(null);
+    setOnlineUsers([]);
+    axios.defaults.headers.common["Authorization"] = null;
+    toast.success("Logged Out successfully");
+
+    if (socket?.connected) {
+      socket.disconnect();
     }
 
-    const socketConnect = (userData) => {
-        if(!userData || socket?.connected) return;
-        const newSocket = io(SOCKET_BACKEND_URL, {
-            query: {
-                userId: userData?._id
-            }
-        });
+    location.reload();
+  };
 
-        newSocket.connect();
-        setSocket(newSocket);
+  const updateProfile = async (body) => {
+    try {
+      const res = await axios.patch(`${backendURL}/user`, body, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
 
-        newSocket.on("getOnlineUsers", (userIds) => {
-            setOnlineUsers(userIds);
-        })
-
+      if (res.data?.success) {
+        toast.success(res.data?.message);
+      } else {
+        toast.error(res.data?.message);
+      }
+    } catch (error) {
+      globalErrorHelper(error);
     }
+  };
 
-    // Login function to handle user authentication and socket connection
-    const login = async (payload) => {
-        try {
-            const res = await api.post(`/auth/login`, payload);
-            if(res.data.success) {
-                Cookies.set('accessToken', res.data.data.accessToken);
-                axios.defaults.headers.common["Authorization"] = res.data.data.accessToken;
-                toast.success(res.data.message)
-                return res.data;
-            }else {
-                 toast.error(res.data.message);
-            }
-        } catch (error) {
-            toast.error(error.message);
-        }
+  // Call Authenticated Users When page loaded
+  useEffect(() => {
+    if (accessToken) {
+      axios.defaults.headers.common["Authorization"] = accessToken;
+      checkAuth();
     }
-    // Sign Up function to handle user authentication and socket connection
-    const signup = async (payload) => {
-        try {
-            const res = await api.post(`/user/register`, payload);
-            if(res.data.success) {
-                toast.success(res.data.message);
-                axios.defaults.headers.common["Authorization"] = res.data.data.accessToken;
-                Cookies.set('accessToken', res.data.data.accessToken);
-                window.location.href = '/';
-            }else {
-                 toast.error(res.data.message);
-            }
-        } catch (error) {
-            toast.error(error.message);
-        }
-    }
+  }, []);
 
-    const logout = () => {
-        Cookies.remove('refreshToken');
-        Cookies.remove('accessToken');
-        setaccessToken(null);
-        setAuthUser(null);
-        setOnlineUsers([])
-        axios.defaults.headers.common["Authorization"] = null;   
-        toast.success("Logged Out successfully");
+  const value = {
+    axios,
+    authUser,
+    onlineUsers,
+    socket,
+    login,
+    logout,
+    updateProfile,
+    signup,
+  };
 
-        if (socket?.connected) {
-            socket.disconnect();
-        }
-
-        location.reload();
-
-    }
-
-    const updateProfile = async (body) => {
-        try {
-            const res = await axios.patch(`${backendURL}/user`, body, {
-                headers: {
-                    "Content-Type": "multipart/form-data"
-                }
-            });
-
-            if(res.data.success) {
-                toast.success(res.data.message);
-            }else{
-                toast.error(res.data.message);
-            }
-
-        } catch (error) {
-            toast.error(error.message);
-            console.log(error.message);
-        }
-    }
-
-    // Call Authenticated Users When page loaded
-    useEffect(() => {
-        if(accessToken) {
-            axios.defaults.headers.common["Authorization"] = accessToken;
-            checkAuth();
-        }
-        
-    }, []);
-
-    const value = {
-        axios,
-        authUser,
-        onlineUsers,
-        socket,
-        login,
-        logout,
-        updateProfile,
-        signup
-    }
-
-    return (
-        <AuthContext.Provider value={value}>
-            {children}
-        </AuthContext.Provider>
-    )
-}
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+};
