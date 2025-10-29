@@ -39,7 +39,7 @@ io.on("connection", (socket) => {
 // Middleware setup
 app.use(
   cors({
-    origin: "https://chatapp-client-lake.vercel.app",
+    origin: "https://chatapp-frontend-jf6w.onrender.com",
     credentials: true
   })
 );
