@@ -39,8 +39,7 @@ io.on("connection", (socket) => {
 // Middleware setup
 app.use(
   cors({
-    // origin: "https://chatapp-client-lake.vercel.app",
-    origin: "http://localhost:5173",
+    origin: "https://chatapp-client-lake.vercel.app",
     credentials: true
   })
 );

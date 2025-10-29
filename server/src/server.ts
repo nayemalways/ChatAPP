@@ -3,7 +3,8 @@ import { Server } from 'http';
 import app from './app';
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
-import env from '../src/config/env';
+import env from './config/env';
+ 
 
 dotenv.config();
 
