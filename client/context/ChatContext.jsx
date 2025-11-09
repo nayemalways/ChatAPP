@@ -7,11 +7,15 @@ import { getAccessToken } from "../src/lib/utils";
 
 export const ChatProvider = ({ children }) => {
   const [message, setMessage] = useState([]);
+  const [isFocused, setIsFocused] = useState(true);
   const [users, setUsers] = useState([]);
   const [selectedUser, setSelectedUser] = useState(null);
   const [unseenMessage, setUnseenMessage] = useState({});
 
   const { socket } = useContext(AuthContext);
+
+  window.onfocus = () => setIsFocused(true);
+  window.onblur = () => setIsFocused(false);
 
   // Get all users
   const getUsers = async () => {
@@ -53,6 +57,13 @@ export const ChatProvider = ({ children }) => {
         newMessage.seen = true;
         setMessage((prevMessages) => [...prevMessages, newMessage]);
         api.patch(`/mark/${newMessage._id}`);
+
+        if (!isFocused && Notification.permission === "granted") {
+          new Notification("New message", {
+            body: newMessage.text,
+            icon: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTkEXlY3hKx-TKKpPDNpcXz6niAHgCSpRGevA&s",
+          });
+        }
       } else {
         setUnseenMessage((prevUnseenMessage) => ({
           ...prevUnseenMessage,
@@ -73,6 +84,13 @@ export const ChatProvider = ({ children }) => {
     subscribeToMessages();
     return () => unsubscribeFromMessages();
   }, [socket, selectedUser]);
+
+  useEffect(() => {
+    if (Notification.permission !== "granted") {
+      Notification.requestPermission();
+    }
+  }, []);
+
 
   // Send message to selected user
   const sendMessage = async (messageData) => {
